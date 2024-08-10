@@ -7,6 +7,6 @@ spec:
   template:
     spec:
       restartPolicy: Never
-      containers:
+      containers: 
         - name: job-module1
           image: docker.io/stasbochok/simple-server:module1
