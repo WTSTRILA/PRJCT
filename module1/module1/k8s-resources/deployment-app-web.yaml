@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: app-web
-          image: ghcr.io/kyryl-opens-ml/app-web:latest 
+          image: docker.io/stasbochok/simple-server:module1
 ---
 apiVersion: v1
 kind: Service
