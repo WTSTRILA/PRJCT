@@ -28,4 +28,4 @@ spec:
   - port: 8000
     protocol: TCP
   selector:
-    app: deployments-app-web
+    app: deployments-module1
