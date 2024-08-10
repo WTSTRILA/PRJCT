@@ -7,7 +7,7 @@ jobs:
 
       - name: List directory contents
         run: |
-          ls -la module-1
+          ls -la module1
 
       - name: Run app.py
         run: |
