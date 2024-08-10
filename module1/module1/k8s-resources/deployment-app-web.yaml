@@ -2,16 +2,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deployments-app-web
+  name: deployments-module1
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: deployments-app-web
+      app: deployments-module1
   template:
     metadata:
       labels:
-        app: deployments-app-web
+        app: deployments-module1
     spec:
       containers:
         - name: app-web
@@ -20,9 +20,9 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: deployments-app-web
+  name: deployments-module1
   labels:
-    app: deployments-app-web
+    app: deployments-module1
 spec:
   ports:
   - port: 8000
