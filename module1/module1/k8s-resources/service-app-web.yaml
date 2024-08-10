@@ -2,12 +2,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: deployments-app-web
+  name: deployments-module1
   labels:
-    app: deployments-app-web
+    app: deployments-module1
 spec:
   ports:
   - port: 8000
     protocol: TCP
   selector:
-    app: deployments-app-web
+    app: deployments-module1
