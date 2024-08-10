@@ -9,7 +9,7 @@ spec:
     matchLabels:
       app: deployments-module1
   template:
-    metadata:
+    metadata: 
       labels:
         app: deployments-module1
     spec:
