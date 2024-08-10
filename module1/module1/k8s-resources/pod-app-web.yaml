@@ -1,8 +1,8 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: pod-app-web
+  name: pod-app
 spec:
   containers:
     - image: docker.io/stasbochok/simple-server:module1
-      name: pod-app-web
+      name: pod-app
