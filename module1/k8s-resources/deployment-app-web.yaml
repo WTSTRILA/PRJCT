@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployments-module1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: deployments-module1
+  template:
+    metadata:
+      labels:
+        app: deployments-module1
+    spec:
+      containers:
+        - name: app-web
+          image: docker.io/stasbochok/simple-server:module1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: deployments-module1
+  labels:
+    app: deployments-module1
+spec:
+  ports:
+  - port: 8000
+    protocol: TCP
+  selector:
+    app: deployments-module1
