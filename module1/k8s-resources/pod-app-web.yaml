@@ -10,5 +10,5 @@ jobs:
           ls -la module1
 
       - name: Run app.py
-        run: |
+        run: | 
           python module1/app.py
