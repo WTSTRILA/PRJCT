@@ -37,24 +37,3 @@ jobs:
       - name: Print pods again
         run: |
           sleep 5 && kubectl get pod -A
-
-  modal-lab-example-run:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
-      - name: Install Modal & setup credentials
-        run: |
-          pip install modal --upgrade
-          modal token set --token-id ${{ secrets.MODAL_MODAL_LABS_TOKEN_ID }} --token-secret ${{ secrets.MODAL_MODAL_LABS_TOKEN_SECRET }}
-
-      - name: Run Modal function
-        run: |
-          modal run ./module1/app.py
