@@ -24,7 +24,7 @@ jobs:
 
       - name: Deploy application
         run: |
-          kubectl create -f module-1/k8s-resources/deployment-app-web.yaml
+          kubectl create -f module1/k8s-resources/deployment-app-web.yaml
 
       - name: Print pods
         run: |
@@ -57,4 +57,4 @@ jobs:
 
       - name: Run Modal function
         run: |
-          modal run ./module-1/app.py
+          modal run ./module1/app.py
