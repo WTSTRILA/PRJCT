@@ -9,7 +9,7 @@ on:
     branches:
       - main
     paths:
-      - 'module-1/**'
+      - 'module1/**'
 
 jobs:
 
@@ -57,4 +57,4 @@ jobs:
 
       - name: Run Modal function
         run: |
-          modal run ./module-1/modal_hello_world.py
+          modal run ./module-1/app.py
