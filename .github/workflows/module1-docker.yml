@@ -71,7 +71,7 @@ jobs:
         with:
           registry: docker.io
           username: ${{ secrets.DOCKER_LOGIN }}
-          password: ${{ secrets.DOCKER_TOKEN }}
+          password: ${{ secrets.GHCR_TOKEN }}
     
       - name: Extract metadata (tags, labels) for Docker
         id: meta
