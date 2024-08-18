@@ -90,5 +90,5 @@ def create_sensor_dataset(csv_file_path):
 
 
 if __name__ == "__main__":
-    csv_file_path = "data.csv"
+    csv_file_path = ".data/data.csv"
     create_sensor_dataset(csv_file_path)
