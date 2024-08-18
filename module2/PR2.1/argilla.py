@@ -84,7 +84,7 @@ def create_sensor_dataset(csv_file_path):
 
     dataset.records.log(records)
 
-    annotated_csv_file_path = "annotated_data.csv"
+    annotated_csv_file_path = ".data/annotated_data.csv"
     df.to_csv(annotated_csv_file_path, index=False)
     print(f"Annotated dataset saved to {annotated_csv_file_path}")
 
