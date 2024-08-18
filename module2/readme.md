@@ -1,6 +1,6 @@
 # MinIO Deployment Guide
 
-1. **Start MinIO:**
+1. **Start MinIO Local:**
    
    ```markdown
      ./minio server /data --console-address ":9001"
@@ -19,14 +19,9 @@
   Run k9s
    
    ```markdown
+
+   <!-- Начало раздела установки -->
    k9s -A
-
- Deploy
-
-   ```markdown 
-      kubectl create -f minio_storage/minio-dev.yaml
-Uses to UI
-
-   ```markdown 
-    kubectl port-forward --address=0.0.0.0 pod/minio 9000:9000
-    kubectl port-forward --address=0.0.0.0 pod/minio 9001:9001
+   kubectl create -f minio_storage/minio-dev.yaml
+   kubectl port-forward --address=0.0.0.0 pod/minio 9000:9000
+   kubectl port-forward --address=0.0.0.0 pod/minio 9001:9001
