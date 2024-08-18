@@ -11,17 +11,17 @@
 
 4. **Kubernetes Deployment**
 
-   Create cluster
+Create cluster
 
    ```markdown
-   kind create cluster --name ml-in-production
- 
-  Run k9s
-   
+      kind create cluster --name ml-in-production
+Run k9s
+    ```markdown
+      k9s -A
+Deploy
    ```markdown
-
-   <!-- Начало раздела установки -->
-   k9s -A
    kubectl create -f minio_storage/minio-dev.yaml
+Access UI
+   ```markdown
    kubectl port-forward --address=0.0.0.0 pod/minio 9000:9000
    kubectl port-forward --address=0.0.0.0 pod/minio 9001:9001
