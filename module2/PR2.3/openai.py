@@ -63,7 +63,7 @@ def create_synthetic_dataset(num_samples: int = 10):
     samples = [generate_synthetic_example() for _ in range(num_samples)]
 
     df = pd.DataFrame(samples)
-    df.to_csv("data.csv", index=False)
+    df.to_csv(".data/data.csv", index=False)
     print("Synthetic data saved" )
 
 if __name__ == "__main__":
