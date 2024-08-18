@@ -1,7 +1,8 @@
 # MinIO Deployment Guide
 
 1. **Start MinIO:**
-   """
+   
+   ```markdown
   ./minio server /data --console-address ":9001"
    
 3. **Docker Deployment:**
