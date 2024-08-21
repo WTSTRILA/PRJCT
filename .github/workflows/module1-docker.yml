@@ -53,8 +53,13 @@ jobs:
 
       - name: Run ok
         run: |
-          docker run --rm --name app-run docker.io/stasbochok/simple-server:module1
+          docker run --rm --name app-run -d docker.io/stasbochok/simple-server:module1
 
+      - name: Wait for some time before stopping the container
+        run: sleep 30  # Сервер будет работать еще 30 секунд
+
+      - name: Stop Docker container
+        run: docker stop app-run
 
   app-docker:
     runs-on: ubuntu-latest
