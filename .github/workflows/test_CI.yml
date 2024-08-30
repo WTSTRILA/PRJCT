@@ -25,13 +25,15 @@ jobs:
       run: |
         pip install --upgrade pip
         pip install pandas scikit-learn pytest great_expectations
-        
-    - name: Run code tests
-      run: |
-        pytest module3/HW6/test_code.py --maxfail=1 --disable-warnings -q
+
+  
 
     - name: Run data quality tests
       run: |
         pytest module3/HW6/test_data.py --maxfail=1 --disable-warnings -q
+
+    - name: Run model tests
+      run: |
+        pytest module3/HW6/test_model.py --maxfail=1 --disable-warnings -q
 
 
