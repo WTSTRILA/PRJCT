@@ -24,9 +24,21 @@ jobs:
     - name: Install dependencies
       run: |
         pip install --upgrade pip
-        pip install pandas scikit-learn pytest great_expectations
+        pip install pandas scikit-learn pytest great_expectations==<0.15.15>
+        
+    - name: Print current working directory
+      run: pwd
 
-  
+    - name: List all files in the repository
+      run: ls -la
+
+    - name: Check if winequality-red.csv exists
+      run: |
+        if [ -f module3/HW6/winequality-red.csv ]; then echo "File exists"; else echo "File does not exist"; exit 1; fi
+
+    - name: Run code tests
+      run: |
+        pytest module3/HW6/test_code.py --maxfail=1 --disable-warnings -q
 
     - name: Run data quality tests
       run: |
@@ -35,5 +47,3 @@ jobs:
     - name: Run model tests
       run: |
         pytest module3/HW6/test_model.py --maxfail=1 --disable-warnings -q
-
-
