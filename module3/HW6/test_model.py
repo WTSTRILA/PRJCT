@@ -8,7 +8,7 @@ from pathlib import Path
 
 @pytest.fixture(scope="module")
 def wine_quality_data() -> pd.DataFrame:
-    data_path = Path("winequality-red.csv")
+    data_path = Path('module3/HW6/winequality-red.csv')
     return pd.read_csv(data_path, delimiter=';', quotechar='"')
 
 def test_data_columns(wine_quality_data: pd.DataFrame):
