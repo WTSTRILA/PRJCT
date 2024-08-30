@@ -3,10 +3,10 @@ name: CI Test
 on:
   push:
     branches:
-      - module3
+      - main
   pull_request:
     branches:
-      - module3
+      - main
 
 jobs:
   test:
@@ -31,6 +31,9 @@ jobs:
 
     - name: List all files in the repository
       run: ls -la
+
+    - name: List files in module3/HW6
+      run: ls -la module3/HW6
 
     - name: Check if winequality-red.csv exists
       run: |
