@@ -6,7 +6,7 @@ from typing import Tuple
 
 @pytest.fixture
 def data() -> Tuple[PandasDataset, PandasDataset, PandasDataset]:
-    df = pd.read_csv('winequality-red.csv', sep=';')
+    df = pd.read_csv('module3/HW6/winequality-red.csv', sep=';')
 
     df_train = df.iloc[:1100]
     df_val = df.iloc[1100:1300]
