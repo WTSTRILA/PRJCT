@@ -1,6 +1,6 @@
 from openai import OpenAI
 
-client = OpenAI(api_key='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')
+client = OpenAI(api_key=' ')
 
 def predict(texts):
     responses = []
