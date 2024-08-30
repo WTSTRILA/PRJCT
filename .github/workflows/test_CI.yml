@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install pandas scikit-learn pytest great_expectations
+          pip install pandas scikit-learn pytest ggreat_expectations==0.15.15
 
       - name: Run code tests
         run: |
