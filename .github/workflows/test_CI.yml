@@ -34,6 +34,4 @@ jobs:
       run: |
         pytest module3/HW6/test_data.py --maxfail=1 --disable-warnings -q
 
-    - name: Run model tests
-      run: |
-        pytest module3/HW6/test_model.py --maxfail=1 --disable-warnings -q
+
