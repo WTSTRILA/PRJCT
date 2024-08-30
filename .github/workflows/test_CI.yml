@@ -26,10 +26,6 @@ jobs:
           pip install --upgrade pip
           pip install pandas scikit-learn pytest great_expectations
 
-      - name: Download test data
-        run: |
-          curl -o module3/HW6/winequality-red.csv https://raw.githubusercontent.com/WTSTRILA/PRJCT/module3/module3/HW6/winequality-red.csv
-
       - name: Run tests
         run: |
           pytest module3/HW6/test_code.py --maxfail=1 --disable-warnings -q
