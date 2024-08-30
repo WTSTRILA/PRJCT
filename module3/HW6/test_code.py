@@ -9,7 +9,7 @@ from sklearn.metrics import classification_report, accuracy_score
 
 @pytest.fixture(scope="module")
 def data():
-    wine_quality = pd.read_csv('winequality-red.csv', delimiter=';')
+    wine_quality = pd.read_csv('module3/HW6/winequality-red.csv', delimiter=';')
     X = wine_quality.drop('quality', axis=1)
     y = wine_quality['quality']
     return train_test_split(X, y, test_size=0.3, random_state=42)
