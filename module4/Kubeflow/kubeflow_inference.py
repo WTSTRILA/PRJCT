@@ -7,7 +7,7 @@ import typer
 from kfp import dsl
 from kfp.dsl import Artifact, Dataset, Input, Model, Output
 
-IMAGE = "ghcr.io/stasbochok/module4:main"
+IMAGE = "docker.io/stasbochok/module4:main"
 
 
 @dsl.component(base_image=IMAGE)
