@@ -19,8 +19,8 @@
 4. **Create training:**
    
    ```markdown
-     python Kubeflow_training.py http://0.0.0.0:3000
+     python ./Kubeflow/kubeflow_training.py http://0.0.0.0:3000
    
 5. **Create inference:**
    ```markdown
-    python Kubeflow_inference.py http://0.0.0.0:3000
+     python ./Kubeflow/kubeflow_inference.py http://0.0.0.0:3000
