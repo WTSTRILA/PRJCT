@@ -8,8 +8,7 @@ from kfp import dsl
 from kfp.dsl import Artifact, Dataset, Input, Model, Output
 
 
-IMAGE = "docker.io/stasbochok/module4:main"
-
+IMAGE = "docker.io/stasbochok/winequality-training-pipeline:latest"
 
 @dsl.component(base_image=IMAGE)
 def load_data(
