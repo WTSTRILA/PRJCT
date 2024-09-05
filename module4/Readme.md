@@ -11,21 +11,16 @@
     kubectl wait --for condition=established --timeout=60s crd/applications.app.k8s.io
     kubectl apply -k "github.com/kubeflow/pipelines/manifests/kustomize/env/dev?ref=$PIPELINE_VERSION"
 
-3. **Kubernetes Deployment**
+3. **UI Access**
    ```markdown
-   kind create cluster --name ml-in-production
-   k9s -A
-   kubectl create -f minio_storage/minio-dev.yaml
-   kubectl port-forward --address=0.0.0.0 pod/minio 9000:9000
-   kubectl port-forward --address=0.0.0.0 pod/minio 9001:9001
+   kubectl port-forward --address=0.0.0.0 svc/minio-service 9000:9000 -n kubeflow
+   kubectl port-forward --address=0.0.0.0 svc/ml-pipeline-ui 3000:80 -n kubeflow
 
-1. **Create kind clusterl:**
+4. **Create training:**
    
    ```markdown
-     kind create cluster --name ml-in-production
+     python Kubeflow_training.py http://0.0.0.0:3000
    
-2. **Install Kubeflow:**
+5. **Create inference:**
    ```markdown
-    kubectl apply -k "github.com/kubeflow/pipelines/manifests/kustomize/cluster-scoped-resources?ref=$PIPELINE_VERSION"
-    kubectl wait --for condition=established --timeout=60s crd/applications.app.k8s.io
-    kubectl apply -k "github.com/kubeflow/pipelines/manifests/kustomize/env/dev?ref=$PIPELINE_VERSION"
+    python Kubeflow_inference.py http://0.0.0.0:3000
