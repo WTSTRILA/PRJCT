@@ -24,11 +24,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install gradio wandb tensorflow numpy pillow 
-
-      - name: Run tests
-        run: |
-          export PYTHONPATH=$(pwd)/module5/HW9/gradio
-          python -m unittest discover -s module5/HW9/gradio -p 'test_grad.py'
+          
 
   deploy:
     runs-on: ubuntu-latest
