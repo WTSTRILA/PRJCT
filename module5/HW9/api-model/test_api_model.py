@@ -6,7 +6,7 @@ from PIL import Image
 import wandb
 import tensorflow as tf
 from fastapi.testclient import TestClient
-from api_model import app, initialize_wandb, load_model, preprocess_image, predict_fracture
+from .api_model import app, initialize_wandb, load_model, preprocess_image, predict_fracture
 
 class TestAppFunctions(TestCase):
 
