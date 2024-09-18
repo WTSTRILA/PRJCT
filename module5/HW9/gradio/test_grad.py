@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 import numpy as np
 from PIL import Image
 import tensorflow as tf
-from grad import initialize_wandb, load_model, preprocess_image, predict_fracture
+from .grad import initialize_wandb, load_model, preprocess_image, predict_fracture
 
 class TestBoneFracturePrediction(unittest.TestCase):
 
