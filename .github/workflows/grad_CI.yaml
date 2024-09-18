@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install gradio wandb tensorflow numpy pillow unittest mock
+          pip install gradio wandb tensorflow numpy pillow 
 
       - name: Run tests
         run: |
