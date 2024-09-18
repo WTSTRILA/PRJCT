@@ -1,21 +1,18 @@
 from openai import OpenAI
 
-BASE_URL = ""
-HF_API_KEY = ""
+openai_api_key = " "
+openai_api_base = "http://localhost:8000/v1"
 
 client = OpenAI(
-    base_url=os.path.join(BASE_URL, "v1/"),
-    api_key=HF_API_KEY,
+    api_key=openai_api_key,
+    base_url=openai_api_base,
 )
-chat_completion = client.chat.completions.create(
-    model="tgi",
+
+chat_response = client.chat.completions.create(
+    model="facebook/opt-125m",
     messages=[
         {"role": "system", "content": "You are a math assistant."},
         {"role": "user", "content": "How much is 2 plus 2?"},
     ],
-    stream=True,
-    max_tokens=500,
 )
-
-for message in chat_completion:
-    print(message.choices[0].delta.content, end="")
+print("Chat response:", chat_response)
