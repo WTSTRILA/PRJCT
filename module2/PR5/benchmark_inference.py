@@ -8,6 +8,7 @@ import typer
 import ray
 from dask.distributed import Client
 
+
 def train_model(x_train: np.ndarray, y_train: np.ndarray) -> DummyClassifier:
     dummy_clf = DummyClassifier(strategy="most_frequent")
     dummy_clf.fit(x_train, y_train)
