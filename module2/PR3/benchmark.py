@@ -5,6 +5,7 @@ import os
 import typer
 from typing import Callable
 
+
 def create_dataframe(n_rows: int = 100_000, n_cols: int = 10) -> pd.DataFrame:
     np.random.seed(0)
     data = np.random.rand(n_rows, n_cols)
