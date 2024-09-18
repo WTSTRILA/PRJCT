@@ -27,7 +27,7 @@ jobs:
 
       - name: Run tests
         run: |
-          python -m unittest module5/HW9/streamlit/test_stream.py
+          python -m unittest module5/HW9/streamlit/test-stream.py
 
   deploy:
     runs-on: ubuntu-latest
