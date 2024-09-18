@@ -7,7 +7,7 @@ ACCESS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
 SECRET_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 ENDPOINT = "0.0.0.0:9000"
 
-
+ 
 class MinioClientNative:
     def __init__(self, bucket_name: str) -> None:
         client = Minio(
