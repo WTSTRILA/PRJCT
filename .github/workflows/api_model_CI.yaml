@@ -28,7 +28,7 @@ jobs:
          
     - name: Build Docker image
       run: |
-        docker build -t api_model:latest .
+        docker build -t api_model:latest -f module5/HW9/api-model/Dockerfile .
 
     - name: Run FastAPI app in a container
       run: |
