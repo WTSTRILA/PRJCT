@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 from pathlib import Path
 
-
+ 
 def save_cifar10_to_local(local_cache: Path):
     transform = transforms.Compose([transforms.ToTensor()])
     dataset = datasets.CIFAR10(root=str(local_cache), train=True, download=True, transform=transform)
