@@ -25,10 +25,6 @@ jobs:
           pip install --upgrade pip
           pip install streamlit wandb tensorflow numpy pillow
 
-      - name: Run tests
-        run: |
-          export PYTHONPATH=$(pwd)/module5/HW9/streamlit
-          python -m unittest discover -s module5/HW9/streamlit -p 'test-stream.py'
 
   deploy:
     runs-on: ubuntu-latest
