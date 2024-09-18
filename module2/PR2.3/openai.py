@@ -4,7 +4,7 @@ from typing import Dict
 from retry import retry
 from openai import OpenAI
 
-api_key = ""
+api_key = "" 
 openai.api_key = api_key
 
 prompt = """
