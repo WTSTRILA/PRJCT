@@ -27,10 +27,6 @@ jobs:
 
       - name: Run tests
         run: |
-         python -m unittest module5/HW9/gradio/test_grad.py
-
-      - name: Run tests
-        run: |
           export PYTHONPATH=$(pwd)/module5/HW9/streamlit
           python -m unittest discover -s module5/HW9/gradio -p 'test_grad.py'
 
