@@ -5,7 +5,7 @@ import chromadb
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
 df = pd.read_csv('data.csv')
-
+ 
 df = df.drop(columns=['timestamp'])
 
 df['combined'] = df.astype(str).agg(' '.join, axis=1)
