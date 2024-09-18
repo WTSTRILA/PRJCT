@@ -1,4 +1,4 @@
-from stream import initialize_wandb, load_model, preprocess_image, predict_fracture
+from .stream import initialize_wandb, load_model, preprocess_image, predict_fracture
 import io
 import numpy as np
 from unittest import TestCase
