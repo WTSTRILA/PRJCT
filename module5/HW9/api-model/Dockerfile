@@ -13,9 +13,9 @@ RUN pip install --no-cache-dir \
     wandb \
     numpy
 
-COPY fastapi_app.py /app-api/
+COPY api_model.py /app-api/
 
 EXPOSE 8000
 
 # Command to run FastAPI
-CMD ["uvicorn", "fastapi_app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "api_model:app", "--host", "0.0.0.0", "--port", "8000"]
