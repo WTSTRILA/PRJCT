@@ -11,7 +11,7 @@ def bucket_name() -> str:
 @pytest.fixture()
 def minio_client_native(bucket_name: str) -> MinioClientNative:
     return MinioClientNative(bucket_name=bucket_name)
-
+ 
 @pytest.fixture()
 def minio_client_s3(bucket_name: str) -> MinioClientS3:
     return MinioClientS3(bucket_name=bucket_name)
