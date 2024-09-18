@@ -3,7 +3,7 @@ import argilla as rg
 
 client = rg.Argilla(api_url="http://localhost:6900", api_key="admin.apikey")
 
- 
+  
 def create_sensor_dataset(csv_file_path):
     guidelines = """
     Please examine the provided sensor data and annotate the data based on the type of equipment malfunction. 
