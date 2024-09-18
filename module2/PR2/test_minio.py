@@ -1,6 +1,7 @@
 import pytest
 import uuid
 from pathlib import Path
+import minio
 from minio_client import MinioClientNative
 from minio_client import MinioClientS3
 
