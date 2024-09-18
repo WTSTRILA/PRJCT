@@ -2,7 +2,7 @@ import pandas as pd
 
 file_path = './data/annotated_data.csv'
 df = pd.read_csv(file_path)
-
+ 
 
 def get_expected_annotations(row):
     annotations = []
