@@ -13,7 +13,7 @@ RUN pip install --no-cache-dir \
     wandb \
     numpy
 
-COPY api_model.py /app-api/
+COPY module5/HW9/api-model/api_model.py /app-api/
 
 EXPOSE 8000
 
