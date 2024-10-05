@@ -1,93 +1,135 @@
-from confluent_kafka import Producer, Consumer, KafkaError
-import threading
-import io
 import os
-from PIL import Image
-import wandb
-import tensorflow as tf
-import numpy as np
+import io
+import threading
+import boto3
+import onnxruntime as ort
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
+from kafka import KafkaProducer
+from kq import Job, Queue
+from PIL import Image
+import numpy as np
 import uvicorn
-import nest_asyncio
+import logging
+from botocore.exceptions import ClientError
+
+# Настройка логирования
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-producer = Producer({'bootstrap.servers': 'localhost:9092'})
-consumer = Consumer({
-    'bootstrap.servers': 'localhost:9092',
-    'group.id': 'model-consumer',
-    'auto.offset.reset': 'earliest'
-})
-consumer.subscribe(['inference-requests'])
+# Глобальные переменные
+producer = None
+queue = None
+model_lock = threading.Lock()
+session = None
 
-run = wandb.init(project="prjct_bones", job_type="predict", reinit=True)
+ACCESS_KEY = os.getenv('AWS_ACCESS_KEY_ID')  # Использование переменных окружения
+SECRET_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+BUCKET_NAME = 'bone-model'
+MODEL_KEY = 'bone_model.onnx'
+
 
 def load_model():
-    artifact = run.use_artifact('stanislavbochok-/prjct_bones/bone-model:v1', type='model')
-    artifact_dir = artifact.download()
-    model_path = os.path.join(artifact_dir, 'bone_model.h5')
-    return tf.keras.models.load_model(model_path)
+    global session
+    s3 = boto3.client('s3', aws_access_key_id=ACCESS_KEY, aws_secret_access_key=SECRET_KEY)
 
-model = load_model()
+    model_buffer = io.BytesIO()
 
-def preprocess_image(image, img_height=180, img_width=180):
-    img = image.convert('RGB')
-    img = img.resize((img_height, img_width))
-    img_array = np.array(img) / 255.0
-    img_array = np.expand_dims(img_array, axis=0)
-    return img_array
-
-def predict_fracture(model, image):
-    processed_image = preprocess_image(image)
-    prediction = model.predict(processed_image)
-    return "Fractured" if prediction[0] > 0.5 else "Not Fractured"
-
-def process_message(message):
     try:
-        contents = message.value()
-        image = Image.open(io.BytesIO(contents))
-        result = predict_fracture(model, image)
+        s3.download_fileobj(BUCKET_NAME, MODEL_KEY, model_buffer)
+        model_buffer.seek(0)
+        logger.info("Модель успешно загружена из S3.")
+        session = ort.InferenceSession(model_buffer.read())
+    except ClientError as e:
+        logger.error(f"Ошибка при загрузке модели из S3: {e}")
+        raise
 
-        print(f'Результат предсказания: {result}')
-        return result
+
+def ensure_model_loaded():
+    global session
+    with model_lock:
+        if session is None:
+            logger.info("Модель не загружена, пытаюсь загрузить...")
+            load_model()
+
+
+def preprocess_image(image_bytes, img_height=180, img_width=180):
+
+    try:
+        image = Image.open(io.BytesIO(image_bytes)).convert('RGB')
+        image = image.resize((img_height, img_width))
+        img_array = np.array(image) / 255.0
+        img_array = np.expand_dims(img_array, axis=0)
+        return img_array
     except Exception as e:
-        print(f"Ошибка при обработке сообщения: {e}")
-        return "Ошибка при обработке изображения"
+        logger.error(f"Ошибка при предобработке изображения: {e}")
+        raise
 
-def consume_messages():
-    while True:
-        msg = consumer.poll(timeout=1.0)
-        if msg is None:
-            continue
-        if msg.error():
-            if msg.error().code() == KafkaError._PARTITION_EOF:
-                continue
-            else:
-                print("Ошибка Kafka:", msg.error())
-                break
 
-        print("Получено сообщение:", msg.value())
-        prediction = process_message(msg)
-        print(f'Prediction: {prediction}')
+def enqueue_prediction(image_bytes):
 
-threading.Thread(target=consume_messages, daemon=True).start()
+    try:
+        processed_image = preprocess_image(image_bytes)
+        job = Job(func='predict_fracture', args=[processed_image.tolist()], timeout=30)  # Убедитесь, что отправляется список
+        queue.enqueue(job)
+        logger.info("Задание на предсказание успешно отправлено в очередь Kafka.")
+    except Exception as e:
+        logger.error(f"Ошибка при отправке задания в очередь: {e}")
+        raise
+
+
+@app.on_event("startup")
+def startup_event():
+
+    global producer, queue
+    ensure_model_loaded()
+
+    try:
+        producer = KafkaProducer(
+            bootstrap_servers='127.0.0.1:9092',
+            value_serializer=lambda v: v.encode('utf-8') if isinstance(v, str) else v
+        )
+        logger.info("KafkaProducer инициализирован.")
+    except Exception as e:
+        logger.error(f"Ошибка при инициализации KafkaProducer: {e}")
+        raise
+
+    try:
+        queue = Queue(topic='inference-requests', producer=producer)
+        logger.info("Очередь Kafka 'inference-requests' инициализирована.")
+    except Exception as e:
+        logger.error(f"Ошибка при инициализации очереди Kafka: {e}")
+        raise
+
+
+@app.on_event("shutdown")
+def shutdown_event():
+
+    global producer
+    if producer:
+        producer.close()
+        logger.info("Соединение с KafkaProducer закрыто.")
+
 
 @app.post("/predict/")
 async def predict_bone_fracture(file: UploadFile = File(...)):
+
     try:
         contents = await file.read()
-        producer.produce('inference-requests', contents)
-        producer.flush()
-        print("Изображение успешно отправлено в Kafka.")
+        if not contents:
+            logger.warning("Получен пустой файл.")
+            return JSONResponse({"error": "Empty file"}, status_code=400)
+
+        enqueue_prediction(contents)
+
     except Exception as e:
-        return JSONResponse({"error": "Invalid image format", "details": str(e)})
+        logger.error(f"Ошибка при обработке запроса на предсказание: {e}")
+        return JSONResponse({"error": "Не удалось поставить задание на предсказание", "details": str(e)}, status_code=500)
 
     return JSONResponse({"message": "Запрос на инференс отправлен в очередь."})
 
+
 if __name__ == "__main__":
-    nest_asyncio.apply()
-    try:
-        uvicorn.run(app, host="0.0.0.0", port=8000)
-    finally:
-        run.finish()
+    uvicorn.run(app, host="0.0.0.0", port=8000)
