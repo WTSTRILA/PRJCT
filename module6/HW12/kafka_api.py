@@ -13,13 +13,11 @@ import uvicorn
 import logging
 from botocore.exceptions import ClientError
 
-# Настройка логирования
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-# Глобальные переменные
 producer = None
 queue = None
 model_lock = threading.Lock()
@@ -72,7 +70,7 @@ def enqueue_prediction(image_bytes):
 
     try:
         processed_image = preprocess_image(image_bytes)
-        job = Job(func='predict_fracture', args=[processed_image.tolist()], timeout=30)  # Убедитесь, что отправляется список
+        job = Job(func='predict_fracture', args=[processed_image.tolist()], timeout=30) 
         queue.enqueue(job)
         logger.info("Задание на предсказание успешно отправлено в очередь Kafka.")
     except Exception as e:
