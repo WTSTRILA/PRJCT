@@ -25,7 +25,7 @@ queue = None
 model_lock = threading.Lock()
 session = None
 
-ACCESS_KEY = os.getenv('AWS_ACCESS_KEY_ID')  # Использование переменных окружения
+ACCESS_KEY = os.getenv('AWS_ACCESS_KEY_ID')  
 SECRET_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 BUCKET_NAME = 'bone-model'
 MODEL_KEY = 'bone_model.onnx'
