@@ -1,64 +1,91 @@
+import os
+import numpy as np
+import tensorflow as tf
 import time
-from functools import wraps
-from typing import Callable, Any, Dict
-import logging
-import asyncio
+from fastapi import FastAPI, UploadFile, File, HTTPException
+from PIL import Image
+from io import BytesIO
+import uvicorn
+import nest_asyncio
+import wandb
 
-logger = logging.getLogger("benchmark")
+app = FastAPI()
 
-def benchmark_endpoint(num_runs: int = 1):
-    
-    def decorator(func: Callable):
-        @wraps(func)
-        async def wrapper(*args, **kwargs) -> Dict[str, Any]:
-            total_processing_time = 0.0
-            total_forward_time = 0.0
-            max_processing_time = 0.0
-            max_forward_time = 0.0
+interpreter = None
+input_details = None
+output_details = None
 
-            results = []
 
-            for run in range(1, num_runs + 1):
-                start_processing = time.time()
-                processed_data = await func(*args, **kwargs)
-                end_processing = time.time()
+def load_model():
+    global interpreter, input_details, output_details
+    run = wandb.init()
+    artifact = run.use_artifact('stanislavbochok-/prjct_bones/quantized_bone_model:v0', type='model')
+    artifact_dir = artifact.download()
 
-                elapsed_processing = end_processing - start_processing
-                total_processing_time += elapsed_processing
-                if elapsed_processing > max_processing_time:
-                    max_processing_time = elapsed_processing
+    model_path = os.path.join(artifact_dir, 'quantized_model.tflite')
+    interpreter = tf.lite.Interpreter(model_path=model_path)
+    interpreter.allocate_tensors()
 
-                start_forward = time.time()
-                model_output = await processed_data['inference'](processed_data['data'])
-                end_forward = time.time()
+    input_details = interpreter.get_input_details()
+    output_details = interpreter.get_output_details()
 
-                elapsed_forward = end_forward - start_forward
-                total_forward_time += elapsed_forward
-                if elapsed_forward > max_forward_time:
-                    max_forward_time = elapsed_forward
 
-                result = "Not Broken" if model_output[0] > 0.5 else "Broken"
-                results.append(result)
+def benchmark_predict(func):
+    def wrapper(*args, **kwargs):
+        num_runs = 10
+        total_time = 0
+        max_time = 0
 
-                logger.info(f"Run {run}/{num_runs}: Processing time = {elapsed_processing:.4f} sec, Inference time = {elapsed_forward:.4f} sec, Result = {result}")
+        for _ in range(num_runs):
+            start_time = time.time()
+            result = func(*args, **kwargs)
+            end_time = time.time()
 
-            average_processing_time = total_processing_time / num_runs
-            average_forward_time = total_forward_time / num_runs
+            elapsed_time = end_time - start_time
+            total_time += elapsed_time
+            max_time = max(max_time, elapsed_time)
 
-            logger.info(f"Average processing time: {average_processing_time:.4f} sec")
-            logger.info(f"Max processing time: {max_processing_time:.4f} sec")
-            logger.info(f"Average inference time: {average_forward_time:.4f} sec")
-            logger.info(f"Max inference time: {max_forward_time:.4f} sec")
-            logger.info(f"Number of runs: {num_runs}")
+        average_time = total_time / num_runs
 
-            return {
-                "predictions": results,
-                "average_processing_time_sec": average_processing_time,
-                "max_processing_time_sec": max_processing_time,
-                "average_inference_time_sec": average_forward_time,
-                "max_inference_time_sec": max_forward_time,
-                "num_runs": num_runs
-            }
+        return {
+            "prediction": result,
+            "average_prediction_time": average_time,
+            "max_prediction_time": max_time,
+            "num_runs": num_runs
+        }
 
-        return wrapper
-    return decorator
+    return wrapper
+
+
+def preprocess_image(image, img_height=180, img_width=180):
+    img = image.convert('RGB')
+    img = img.resize((img_height, img_width))
+    img_array = np.array(img) / 255.0
+    img_array = np.expand_dims(img_array, axis=0).astype(np.float32)
+    return img_array
+
+
+@benchmark_predict
+def predict_fracture(image: UploadFile):
+    try:
+        image_data = Image.open(BytesIO(image.file.read()))
+        processed_image = preprocess_image(image_data)
+
+        interpreter.set_tensor(input_details[0]['index'], processed_image)
+        interpreter.invoke()
+
+        prediction = interpreter.get_tensor(output_details[0]['index'])
+        return "Not fractured" if prediction[0] > 0.5 else "Fractured"
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/predict/")
+async def predict(file: UploadFile = File(...)):
+    return predict_fracture(file)
+
+
+if __name__ == "__main__":
+    load_model()
+    nest_asyncio.apply()
+    uvicorn.run(app, host="0.0.0.0", port=8000)
