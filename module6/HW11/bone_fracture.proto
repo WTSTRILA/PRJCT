@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package bonefracture;
+
+service BoneFractureService {
+  rpc PredictFracture(PredictFractureRequest) returns (PredictFractureResponse);
+}
+
+message PredictFractureRequest {
+  bytes image = 1;
+}
+
+message PredictFractureResponse {
+  string prediction = 1;
+}
