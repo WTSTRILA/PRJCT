@@ -8,23 +8,33 @@ from tensorflow_model_optimization import tensorflow_model_optimization as tfmot
 
 data_dir = Path('./data')
 
+
 def initialize_wandb():
     return wandb.init(project="prjct_bones", job_type="predict", reinit=True)
 
+
 def load_model():
     run = initialize_wandb()
-    artifact = run.use_artifact('stanislavbochok-/prjct_bones/quantized_bone_model:v0', type='model')
+    artifact = run.use_artifact('stanislavbochok-/prjct_bones/bone_model:v0', type='model')
     artifact_dir = artifact.download()
-    model_path = os.path.join(artifact_dir, 'quantized_model.tflite')
+    model_path = os.path.join(artifact_dir, 'bone_model.h5')
 
     original_model = tf.keras.models.load_model(model_path)
 
     if not isinstance(original_model, (tf.keras.models.Sequential, tf.keras.Model)):
-        raise ValueError("Загруженная модель должна быть либо Sequential, либо функциональной моделью.")
+        raise ValueError("The loaded model must be either a sequential or functional model..")
+
+    return original_model
+
+
+def prune_model(original_model):
+    if not isinstance(original_model, (tf.keras.Sequential, tf.keras.Model)):
+        raise ValueError("The model must be Sequential or Functional.")
 
     pruning_schedule = tfmot.sparsity.keras.PolynomialDecay(
         initial_sparsity=0.0, final_sparsity=0.5,
-        begin_step=2000, end_step=4000)
+        begin_step=2000, end_step=4000
+    )
 
     pruned_model = tfmot.sparsity.keras.prune_low_magnitude(original_model, pruning_schedule=pruning_schedule)
 
@@ -32,9 +42,10 @@ def load_model():
 
     return pruned_model
 
+
 def quantize_model(pruned_model):
     if not isinstance(pruned_model, (tf.keras.Sequential, tf.keras.Model)):
-        raise ValueError("Модель должна быть Sequential или функциональной.")
+        raise ValueError("The model must be Sequential or Functional.")
 
     image_paths = [str(p) for p in data_dir.glob('*.jpg')]
     dataset = tf.data.Dataset.from_tensor_slices(image_paths)
@@ -48,7 +59,7 @@ def quantize_model(pruned_model):
     dataset = dataset.map(load_and_preprocess_image).batch(1)
 
     def representative_dataset_gen():
-        for image_batch in dataset.take(100):
+        for image_batch in dataset.take(50):
             yield [image_batch]
 
     converter = tf.lite.TFLiteConverter.from_keras_model(pruned_model)
@@ -59,9 +70,10 @@ def quantize_model(pruned_model):
     quantized_model_path = "quantized_model.tflite"
     with open(quantized_model_path, 'wb') as f:
         f.write(quantized_model)
-    print(f"Квантованная модель сохранена по пути: {quantized_model_path}")
+    print(f"Quantized model saved along the way: {quantized_model_path}")
 
     return quantized_model_path
+
 
 def upload_model_to_wandb(model_path):
     artifact = wandb.Artifact("quantized_bone_model", type="model")
@@ -70,12 +82,15 @@ def upload_model_to_wandb(model_path):
     print(f"Загружен {model_path} в W&B.")
     wandb.finish()
 
+
 def main():
     run = initialize_wandb()
 
-    model = load_model()
+    original_model = load_model()
 
-    quantized_model_path = quantize_model(model)
+    pruned_model = prune_model(original_model)
+
+    quantized_model_path = quantize_model(pruned_model)
 
     upload_model_to_wandb(quantized_model_path)
 
