@@ -19,14 +19,14 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-S3_URL = os.getenv['S3_URL']
-ACCESS_KEY = os.getenv['ACCESS_KEY']
-SECRET_KEY = os.getenv['SECRET_KEY']
-BUCKET_NAME = os.getenv['BUCKET_NAME']
-MODEL_KEY = os.getenv['MODEL_KEY']
+S3_URL = os.getenv('S3_URL')
+ACCESS_KEY = os.getenv('ACCESS_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY')
+BUCKET_NAME = os.getenv('BUCKET_NAME')
+MODEL_KEY = os.getenv('MODEL_KEY')
 
-ARIZE_API_KEY = os.getenv['ARIZE_API_KEY']
-ARIZE_SPACE_KEY = os.getenv['ARIZE_SPACE_KEY']
+ARIZE_API_KEY = os.getenv('ARIZE_API_KEY')
+ARIZE_SPACE_KEY = os.getenv('ARIZE_SPACE_KEY')
 
 arize_client = Client(space_id=ARIZE_SPACE_KEY, api_key=ARIZE_API_KEY)
 
