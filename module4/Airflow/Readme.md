@@ -18,10 +18,10 @@
    ```markdown
    open http://0.0.0.0:8080
 
-4. ** Training job**
+4. **Training job**
    ```markdown
    airflow dags trigger airflow_training
  
-5. ** Inference job**
+5. **Inference job**
    ```markdown
    airflow dags trigger airflow_inference
